@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>my test task</title>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="application/javascript">
+    (async () => {
+        // Определить headless режим по UserAgent
+        let currentUserAgent = navigator.userAgent
+
+        //Обнаружение через webdriver
+        let webdriver = navigator.webdriver
+
+        //Проверка на автоматизацию браузера через chrome development protocol
+        let cdp = false;
+        let e = new Error();
+        Object.defineProperty(e, 'stack', {
+            get() {
+                cdp = true;
+            }
+        });
+        console.log(e);
+
+        //Обычно в headless браузере нет плагинов
+        let plugins = navigator.plugins.length
+
+        //В headless режиме этот атрибут обычно отсутствует.
+        let isChrome = window.chrome !== undefined;
+
+        //Обычно в headless режиме Notification.permission = denied
+        let checkNotification = Notification.permission
+
+        //rtt - по умолчанию  heаdless установлен в 0
+        let rtt = navigator.connection.rtt;
+
+        await axios.request({
+            url: "http://localhost:3000/checkbrowser",
+            method: "POST",
+            "Content-Type": "application/json",
+            data: {
+                currentUserAgent, webdriver, cdp, plugins, isChrome, rtt, checkNotification
+            }
+        })
+            .then(function (response) {
+                console.log(response.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    })()
+</script>
+<p>Результаты можно посмотреть в консоле сервера.</p>
+</body>
+</html>
